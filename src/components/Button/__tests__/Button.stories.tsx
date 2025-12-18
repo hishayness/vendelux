@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { fn } from 'storybook/test';
 import Button from '../index';
 
 const meta = {
@@ -17,9 +17,6 @@ const meta = {
     disabled: {
       control: 'boolean',
     },
-    children: {
-      control: 'text',
-    },
     className: {
       control: 'text',
     },
@@ -34,27 +31,34 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    children: 'Click me',
+    children: 'Click Me',
   },
 };
 
 export const Disabled: Story = {
   args: {
-    children: 'Disabled',
+    children: 'Disabled Button',
     disabled: true,
   },
 };
 
-export const Submit: Story = {
+export const SubmitButton: Story = {
   args: {
     children: 'Submit',
     type: 'submit',
   },
 };
 
+export const ResetButton: Story = {
+  args: {
+    children: 'Reset',
+    type: 'reset',
+  },
+};
+
 export const WithCustomClass: Story = {
   args: {
-    children: 'Custom Style',
-    className: 'bg-green-600 hover:bg-green-700',
+    children: 'Custom Styled',
+    className: 'text-lg font-bold',
   },
 };

@@ -2,6 +2,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { eventsApi, type SearchParams, type Event } from "../../api/events";
 import { type Step, STEPS } from "../../configs";
+import { SessionStorageAdapter } from '../../utils/sessionStore';
+
+type SessionData = {
+  steps: Step[];
+  currentStep: number;
+}
 
 type EventsProviderProps = {
   children: React.ReactNode;
@@ -23,6 +29,7 @@ type EventsContextProps = {
 }
 
 const EventsContext = createContext<EventsContextProps | null>(null);
+const sessionStorage = new SessionStorageAdapter();
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useEventsContext = () => {
@@ -35,8 +42,7 @@ export const useEventsContext = () => {
 
 export const EventsProvider = (props: EventsProviderProps) => {
   const { children } = props;
-  const session = sessionStorage.getItem('eventsSession');
-  const sessionData = session ? JSON.parse(session) : null;
+  const sessionData = sessionStorage.get<SessionData>('eventsSession');
   const [events, setEvents] = useState<Event[]>([]);
   const [steps, setSteps] = useState<Step[]>(sessionData?.steps || STEPS);
   const [currentStep, setCurrentStep] = useState(sessionData?.currentStep || 0);
@@ -48,7 +54,7 @@ export const EventsProvider = (props: EventsProviderProps) => {
   * Clears the current session data and resets the state
   */  
   const clearSession = useCallback(() => {
-    sessionStorage.removeItem('eventsSession');
+    sessionStorage.remove('eventsSession');
     setSteps(STEPS);
     setCurrentStep(0);
     setFilterText('');
@@ -61,11 +67,11 @@ export const EventsProvider = (props: EventsProviderProps) => {
   * @param {number} latestCurrentStep
   */  
   const saveSession = useCallback((latestSteps: Step[], latestCurrentStep: number) => {
-    const sessionData = {
+    const sessionData: SessionData = {
       steps: latestSteps,
       currentStep: latestCurrentStep,
     };
-    sessionStorage.setItem('eventsSession', JSON.stringify(sessionData));
+    sessionStorage.set('eventsSession', sessionData);
   }, []);
 
   /**
