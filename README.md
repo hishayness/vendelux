@@ -13,6 +13,7 @@ It is built using:
 npm i
 npm run dev
 npm run test
+npm run storybook
 ```
 
 ## Structure
@@ -34,4 +35,10 @@ npm run test
 - *./configs.ts*
   - dynamic configuration which supplies the event wizard. Each step maps to a search param field accepted by ticketmaster and also contains it's own validation function
 
-### 
+### Enhancements if there was more time
+
+- Componentize layouts and widgets (eg. wizard) to further reusability and consistency
+- Leverage mature libraries to handle forms (eg. react hook form), virtualization lib to optimize rendering, etc.
+- Build out server side api with proper structuring, observability, logging and error handling
+- Integration test, snapshot testing, e2e testing suites
+  
