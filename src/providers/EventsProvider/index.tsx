@@ -1,3 +1,4 @@
+// biome-ignore assist/source/organizeImports: ignore error
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { eventsApi, type SearchParams, type Event } from "../../api/events";
 
@@ -47,12 +48,12 @@ const STEPS: Step[] = [
     taxonomy: Taxonomy.CITY,
     displayQuestion: "What city is the event located?",
     value: "",
-  },/*
+  },
   {
     taxonomy: Taxonomy.START_DATE_TIME,
     displayQuestion: "When does the event start?",
     value: "",
-  },  
+  },  /*
   {
     taxonomy: Taxonomy.END_DATE_TIME,
     displayQuestion: "When does the event end?",
@@ -87,6 +88,7 @@ export const EventsProvider = (props: EventsProviderProps) => {
     sessionStorage.removeItem('eventsSession');
     setSteps(STEPS);
     setCurrentStep(0);
+    setFilterText('');
     setEvents([]);
   }, []);
 
@@ -109,12 +111,13 @@ export const EventsProvider = (props: EventsProviderProps) => {
   */  
   const fetchEvents = useCallback(async (params: SearchParams) => {
     try {
+      setFilterText('');
       setLoading(true);
+      setErrors(null);
       const data = await eventsApi.search(params);
       setEvents(data._embedded?.events || []);
     } catch (error) {
-      console.error("Failed to fetch events:", error);
-      setErrors("Failed to fetch events. Please try again later.");
+      setErrors(error?.response?.data?.errors?.[0]?.detail || "Failed to fetch events. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -131,7 +134,7 @@ export const EventsProvider = (props: EventsProviderProps) => {
       }
       return acc;
     }, {} as SearchParams);
-
+    
     fetchEvents(queryParams);
   }, [fetchEvents]);
 
@@ -163,6 +166,7 @@ export const EventsProvider = (props: EventsProviderProps) => {
     }
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only trigger on initial mount
   useEffect(() => {
     // Session exists and was completed, fetch events right away
     if (sessionData && sessionData.currentStep === steps.length) {

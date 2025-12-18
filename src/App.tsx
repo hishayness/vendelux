@@ -22,8 +22,8 @@ const App = () => {
     <>
       <div className="flex gap-5 m-5">
         <section className="w-200 mx-auto my-12 rounded-lg bg-gray-700 shadow-lg shadow-black/25 p-6 m-4">
-          <form className='flex flex-col'>
-            <div className='relative min-h-[100px]'>
+          <form className="flex flex-col">
+            <div className="relative min-h-[100px]">
               <AnimatePresence>
                 {steps.map((step, index) => (
                   currentStep === index 
@@ -38,7 +38,7 @@ const App = () => {
                 ))}
               </AnimatePresence>
             </div>
-            <div className='flex gap-4'>
+            <div className="flex gap-4">
               {currentStep > 0 && <Button type="button" onClick={() => setCurrentStep(currentStep - 1)}>
                 Back
               </Button>}
@@ -62,22 +62,34 @@ const App = () => {
         </section>
       </div>
       <div>
-        {errors && <div className='m-8 p-4 text-red-500'>Error: {errors}</div>}
+        {loading && <div className="m-8 p-4">
+          <motion.div
+            animate={{
+              opacity: [0.7, 1, 0.7],    // Pulse opacity for a breathing effect
+            }}
+            transition={{
+              duration: .3,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}          
+          >Loading</motion.div>
+        </div>}
+        {errors && <div className="m-8 p-4 text-red-500">Error: {errors}</div>}
         {!loading && !errors && currentStep === steps.length && events.length === 0 && (
-          <div className='m-8 p-4'>No events found for the given criteria.</div>
+          <div className="m-8 p-4">No events found for the given criteria.</div>
         )}
         {events.length > 0 && 
           <>
-            <div className='m-5'>
-              <div className='flex items-center'>
-                <input type="text" placeholder="Filter events..." className='m-4 p-2 w-60 border border-gray-300 rounded' onKeyUp={e => onFilter(e)}/>
-                {filterText && <div className='m-4'>Filtering by: <strong>{filterText}</strong></div>}
+            <div className="m-5">
+              <div className="flex items-center">
+                <input type="text" placeholder="Filter events..." className="m-4 p-2 w-60 border border-gray-300 rounded" onKeyUp={e => onFilter(e)}/>
+                {filterText && <div className="m-4">Filtering by: <strong>{filterText}</strong></div>}
               </div>
-              <div className='m-4'>
+              <div className="m-4">
                 Showing {events.length} event{events.length > 1 ? 's' : ''}
               </div>
             </div>
-            <ul className='m-4 p-0'>
+            <ul className="m-4 p-0">
               {events.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))} 

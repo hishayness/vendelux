@@ -4,11 +4,11 @@ const EventCard = ({ event }: { event: Event}) => {
   return (
     <li key={event.id} className="mb-4 flex gap-5 rounded-lg bg-gray-700 shadow-lg shadow-black/25 p-6 m-4">    
       {event.images?.[0] && (
-        <div className='w-[100px]'>
+        <div className="w-[100px]">
           <img
             src={event.images[0].url}
             alt={event.name}
-            className='w-full object-cover rounded'
+            className="w-full object-cover rounded"
           />
         </div>
       )}
