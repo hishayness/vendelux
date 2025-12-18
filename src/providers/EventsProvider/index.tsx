@@ -1,25 +1,11 @@
 // biome-ignore assist/source/organizeImports: ignore error
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { eventsApi, type SearchParams, type Event } from "../../api/events";
+import { type Step, STEPS } from "../../configs";
 
 type EventsProviderProps = {
   children: React.ReactNode;
 };
-
-const Taxonomy = {
-  KEYWORD: "keyword",
-  CITY: "city",
-  START_DATE_TIME: "startDateTime",
-  END_DATE_TIME: "endDateTime",
-} as const;
-
-type Taxonomy = typeof Taxonomy[keyof typeof Taxonomy];
-
-type Step = {
-  taxonomy: Taxonomy;
-  displayQuestion: string;
-  value: string;
-}
 
 type EventsContextProps = {
   steps: Step[];
@@ -37,29 +23,6 @@ type EventsContextProps = {
 }
 
 const EventsContext = createContext<EventsContextProps | null>(null);
-
-const STEPS: Step[] = [
-  {
-    taxonomy: Taxonomy.KEYWORD,
-    displayQuestion: "What type of event are you interested in?",
-    value: "",
-  },
-  {
-    taxonomy: Taxonomy.CITY,
-    displayQuestion: "What city is the event located?",
-    value: "",
-  },
-  {
-    taxonomy: Taxonomy.START_DATE_TIME,
-    displayQuestion: "When does the event start?",
-    value: "",
-  },  /*
-  {
-    taxonomy: Taxonomy.END_DATE_TIME,
-    displayQuestion: "When does the event end?",
-    value: "",
-  },  */
-];
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useEventsContext = () => {

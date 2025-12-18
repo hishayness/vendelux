@@ -42,7 +42,7 @@ const App = () => {
               {currentStep > 0 && <Button type="button" onClick={() => setCurrentStep(currentStep - 1)}>
                 Back
               </Button>}
-              <Button type="submit" onClick={onStepSubmit} disabled={value.length === 0}>
+              <Button type="submit" onClick={onStepSubmit} disabled={steps?.[currentStep]?.validation?.(value) === false}>
                 {currentStep < steps.length - 1 ? "Next" : "Show Events"}
               </Button>
             </div>
@@ -78,7 +78,7 @@ const App = () => {
         {!loading && !errors && currentStep === steps.length && events.length === 0 && (
           <div className="m-8 p-4">No events found for the given criteria.</div>
         )}
-        {events.length > 0 && 
+        {events.length > 0 &&
           <>
             <div className="m-5">
               <div className="flex items-center">
