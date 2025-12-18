@@ -14,4 +14,7 @@ export default defineConfig({
       },
     },
   },  
+  test: {
+    environment: 'jsdom', // Use the JSDOM environment
+  },  
 })

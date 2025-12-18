@@ -1,22 +1,43 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEventsContext } from './providers/EventsProvider';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from './components/Button';
 import EventCard from './components/EventCard';
 
 const App = () => {
   const { currentStep, setCurrentStep, steps, onStepUpdate, clearSession, events, loading, onFilter, filterText, errors } = useEventsContext();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(steps?.[currentStep]?.value || '');
+  const [error, setError] = useState<string | null>(null);
+  const stepRef = useRef<number>(currentStep);
 
   const onStepSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
+
+    const result = steps[currentStep]?.validation?.(value);
+
+    if (result) {
+      setError(result);
+      return;
+    }
+
     onStepUpdate(currentStep, value);
     setValue('');
     setCurrentStep(currentStep + 1);
   }
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only run when currentStep changes
+  useEffect(() => { 
+    if (currentStep !== stepRef.current) {
+      // set local value to provider step value when stepping through wizard
+      if (currentStep < steps.length && steps[currentStep].value.length > 0) {
+        setValue(steps[currentStep].value);
+      }
+      stepRef.current = currentStep;
+    }
+  }, [currentStep]);
 
   return (
     <>
@@ -31,20 +52,30 @@ const App = () => {
                     <motion.div className="absolute" key={step.taxonomy} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                       <label className="block mb-2 text-lg">
                         {step.displayQuestion}
-                        <input name={step.taxonomy} onChange={e => setValue(e.target.value)} className="p-3 mt-2 w-full" type="text" value={value || step.value} />
+                        <input name={step.taxonomy} onChange={e => {
+                          setError(null);
+                          setValue(e.target.value)
+                        }} className={`p-3 mt-2 w-full ${error ? `rounded-sm border border-red-600` : ``}`} type="text" value={value} placeholder={step.placeholder} />
                       </label>
                     </motion.div> 
                   : null
                 ))}
               </AnimatePresence>
             </div>
+            <div className="text-red-600 h-[24px]">{error}</div>
             <div className="flex gap-4">
-              {currentStep > 0 && <Button type="button" onClick={() => setCurrentStep(currentStep - 1)}>
+              {currentStep > 0 && <Button type="button" onClick={() => {
+                setError(null);
+                setCurrentStep(currentStep - 1)
+              }}>
                 Back
               </Button>}
-              <Button type="submit" onClick={onStepSubmit} disabled={steps?.[currentStep]?.validation?.(value) === false}>
+              {currentStep < steps.length && <Button type="submit" onClick={(e) => {
+                setError(null);
+                onStepSubmit(e);
+              }}>
                 {currentStep < steps.length - 1 ? "Next" : "Show Events"}
-              </Button>
+              </Button>}
             </div>
           </form>
           <ul>
@@ -58,7 +89,11 @@ const App = () => {
               <div>{step.value}</div>
             </div>)
           )}
-          <Button onClick={clearSession} className="mt-4 absolute top-4 right-4">Clear Session</Button>   
+          <Button onClick={() => {
+            setError(null);
+            setValue('');
+            clearSession();
+          }} className="mt-4 absolute top-4 right-4">Clear Session</Button>   
         </section>
       </div>
       <div>

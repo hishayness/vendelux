@@ -59,6 +59,7 @@ export const EventsProvider = (props: EventsProviderProps) => {
     setCurrentStep(0);
     setFilterText('');
     setEvents([]);
+    setErrors(null);
   }, []);
 
   /**
@@ -87,6 +88,7 @@ export const EventsProvider = (props: EventsProviderProps) => {
       setEvents(data._embedded?.events || []);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      setEvents([]);
       setErrors(error?.response?.data?.errors?.[0]?.detail || "Failed to fetch events. Please try again later.");
     } finally {
       setLoading(false);
