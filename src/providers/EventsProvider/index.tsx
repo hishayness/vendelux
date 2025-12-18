@@ -116,7 +116,8 @@ export const EventsProvider = (props: EventsProviderProps) => {
       setErrors(null);
       const data = await eventsApi.search(params);
       setEvents(data._embedded?.events || []);
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       setErrors(error?.response?.data?.errors?.[0]?.detail || "Failed to fetch events. Please try again later.");
     } finally {
       setLoading(false);
